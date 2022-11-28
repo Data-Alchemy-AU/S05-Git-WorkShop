@@ -1,7 +1,15 @@
+# Author: Leah shepherd, Data Alchemy
+# Weather at time of creation: muggy
+
 # ----------------
 # Check version
 # ----------------
 git --version
+
+# ----------------
+# Download GitHub DeskTop
+# ----------------
+If you dont want to use commandline, try the desk top.
 
 # ----------------
 # Check version
