@@ -1,0 +1,188 @@
+# ----------------
+# Check version
+# ----------------
+git --version
+
+# ----------------
+# Check version
+# Configure git - use your own user name
+# Global will set the user name and email for all respositories on your computer
+# If you only want to set for the current repo, remove global
+# ----------------
+git config --global user.name "leahshepherd"
+git config --global user.email "leah.shepherd@dataalchemy.com"
+
+# ----------------
+# To create a new folder and use this as the current working directory for your project 
+# ----------------
+mkdir "/Users/leahshepherd/Library/Mobile Documents/com~apple~CloudDocs/work/Data Alchemy/SIRA/Data analytics and predictive modelling course/Course Materials/5. GIT/R code/new dir"
+cd "/Users/leahshepherd/Library/Mobile Documents/com~apple~CloudDocs/work/Data Alchemy/SIRA/Data analytics and predictive modelling course/Course Materials/5. GIT/R code/new dir"
+
+# ----------------
+# To use an exisiting folder as the current working directory for your project
+# ----------------
+cd "/Users/leahshepherd/Library/Mobile Documents/com~apple~CloudDocs/work/Data Alchemy/SIRA/Data analytics and predictive modelling course/Course Materials/5. GIT/R code/existing dir"
+
+# ----------------
+# Initialize Git repository
+# ----------------
+git init 
+
+# ----------------
+# This repository is empty so lets add a new file!
+# ----------------
+# I added a new R code script to my folder called S05_code.R. Lets check if it is there!
+ls
+# ----------------
+# Check the Git status
+# ----------------
+#This will highlight that we have an untracked file (i.e. there is a new file in our folder, and Git can see it, but it has not been added to the repository).
+#Tracked - files that Git knows about and are added to the repository
+#Untracked - files that are in your working directory, but not added to the repository
+git status
+
+#We can use the option --short to see the changes in a more compact way.
+git status --short 
+
+# ----------------
+# Stage / add one file to the staging environment
+# ----------------
+git add S05_code.R
+
+
+# We could instead stage / add multiple files to the staging environment --all will add all changed files to the staging environment (new, modified, deleted). Short hand: git add -A 
+git add --all
+
+# ----------------
+# Commit
+# ----------------
+#It is good practice to include comments to track our progress. Add -m to the command to include a message. Git will consider each commit change point (or save point). I.e. it is a version we can roll back to if needed. 
+git commit -m "First release of the R code for session 5 on Git."
+
+# ----------------
+# Make a small change to the file and check status
+# ----------------
+git status --short 
+
+# ----------------
+# Commit without staging
+# ----------------
+#Warning: Skipping the Staging Environment is not generally recommended. Skipping the stage step can sometimes make you include unwanted changes.
+git commit -a -m "Updated S05_code.R to load the library tidyverse"
+
+# ----------------
+# Git commit log
+# ----------------
+#Note that the latest commit is referred to as the head/main version. Each commit has a unique ID code.
+git log
+
+# ----------------
+# Git help
+# ----------------
+# Help on a specific command (i.e. commit)
+git commit -help
+# Help on all possible commands. Warning - this is very long.
+git help --all
+
+# ----------------
+# Create a Git branch
+# ----------------
+#In Git, a branch is a new/separate version of the main repository.
+#Branches allow for updates to be made to different parts of the project without directly impacting on the main branch.
+#When a branch is complete it can be merged into the main project. 
+
+#I want to update my S05_code.R file, but I do not want to mess it up, so I will do the edits on a branch
+git branch library-update
+
+#To check the branch was created run git branch. Note that the * is next to main which means we are working on that branch.
+git branch
+
+# ----------------
+# Move to Git branch
+# ----------------
+# Creating a branch does not automatically move to that branch. We need to use the option checkout to swap to the new branch and work on it.
+git checkout library-update
+
+#To check we are now working in the branch library-update we can use git branch. Note that the * is now next to library-update instead of main.
+git branch
+
+#Using the option -b in git branch xxxx will create a branch and move to it.
+#git checkout library-update -b
+
+# ----------------
+# Stage and commit updates to a Git branch
+# ----------------
+#I have updated the S05_code.R to include library(ggplot) and added a custom macro called "better.lib.load.R" to the folder. 
+#Check updates
+git status --short 
+
+#I can see that Git has flagged modifications in the S05_code.R file, but it is not staged for commit. The better.lib.load.R file is flagged as not being added to the repository. Add both to the staging environment
+git add --all
+
+git status --short 
+
+#Commit changes to the branch
+git commit -m "Added ggplot library and macro for loading libraries"
+
+#If we now look at the log, we can see that the Head is now set to library update (i.e. the most recent commit was to this branch). And this branch is different to the master branch (main)
+
+git log
+
+# ----------------
+# Switching between branches
+# ----------------
+#Check files available in current branch: library-update
+ls
+
+#Swap to master branch: Main
+git checkout main
+ls
+
+#We can see that the files in each branch are different. If were were to compare the versions of S05_code.R we would see that the version on branch main does not include the update to the libraries to include ggplot.
+
+# ----------------
+# Emergency fix using branches
+# ----------------
+# Lets say an emergency update was needed on the main branch. We dont want to change the main branch directly (to avoid fatal mistakes) and we dont want to update the library-update branch as it is not yet finalised for release. Instead we make a new branch to make the emergency updates. 
+git checkout -b emergency-fix
+
+#We can use the emergency-fix branch to update the error.
+#My emergency fix was that the date was incorrect 06 Nov instead of 28 Nov. Not THAT urgent really, but I panicked.
+
+# Check the git status
+git status 
+
+#Stage and commit
+git add S05_code.R
+git commit -m "Upaded S05_code.R with emergency date update"
+
+# ----------------
+# Merge emergency fix into main branch
+# ----------------
+#Once we are happy with the fix we need to incorporate it into our main branch. To do this we will perform a merge.
+#First, Move to main branch. Second merge the emergency fix branch into the main branch
+git checkout main
+git merge emergency-fix
+
+#The emergency-fix came from the master branch (main), and no other changes were made to the master branch (main) while working on it. In this situation, Master is almost like an earlier version of the emergency fix branch, so git considers this a continuation of the master branch and just points both master and emergency-fix to the same commit. This is called a "fast-forward". We can now delete emergency fix as it is equivalent to the current version of main.
+
+git branch -d emergency-fix
+
+# ----------------
+# Merge two branches with merge conflicts
+# ----------------
+#I am now continuing to work in my library-update branch. 
+git checkout library-update
+
+#I have added a little bit more code and also added a rff document
+
+I am happy with the udpates I have made and I want to merge them into the master (main) branch
+git add --all
+git commit -m "updated S05_CODE.R with getwd() and added an rtf text file"
+
+
+
+
+
+
+
